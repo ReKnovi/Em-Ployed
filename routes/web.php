@@ -11,7 +11,7 @@ use App\Http\Controllers\JobController;
 
 
 Route::get('/', function () {
-    return view('welcome');
+	return view('welcome');
 });
 
 // Employer registration route
@@ -28,7 +28,7 @@ Route::get('/jobs/create', [JobController::class, 'create'])->name('jobs.create'
 // Job store route
 Route::post('/jobs', [JobController::class, 'store'])->name('jobs.store')->middleware('auth');
 
-// Job index route (you can adjust the route and method names as needed)
+// Job index route
 Route::get('/jobs', [JobController::class, 'index'])->name('jobs.index')->middleware('auth');
 
 // Job details route
@@ -40,6 +40,12 @@ Route::get('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.app
 // Job application submission route
 Route::post('/jobs/{job}/apply', [JobController::class, 'submitApplication'])->name('jobs.submitApplication')->middleware('auth');
 
+//to view applicants
+Route::get('/jobs/{job}/applicants', [JobController::class, 'viewApplicants'])->name('jobs.applicants');
+
+//for updating status
+Route::put('/jobs/{job}/applications/{application}/update-status', [JobController::class, 'updateApplicationStatus'])->name('jobs.updateApplicationStatus');
+
 Auth::routes();
 Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');
 
@@ -50,4 +56,3 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'App\Http\Controllers\ProfileController@password']);
 	Route::get('{page}', ['as' => 'page.index', 'uses' => 'App\Http\Controllers\PageController@index']);
 });
-

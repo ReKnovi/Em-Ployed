@@ -11,6 +11,9 @@
                 <div class="card-header">
                     <a href="{{ route('jobs.show', $job) }}">{{ $job->title }}</a>
                 </div>
+                <div class="card-body">
+                    <a href="{{ route('jobs.applicants', $job) }}" class="btn btn-primary">View Applicants</a>
+                </div>
             </div>
         @endforeach
     </div>

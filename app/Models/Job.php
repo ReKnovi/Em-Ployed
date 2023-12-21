@@ -12,4 +12,9 @@ class Job extends Model
     protected $fillable = [
         'title', 'description', 'qualifications', 'salary', 'location',  'company_name',
     ];
+
+    public function applications()
+    {
+        return $this->hasMany(JobApplication::class);
+    }
 }

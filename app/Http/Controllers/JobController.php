@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\JobApplicationSubmitted;
+use App\Mail\ApplicationStatusUpdated;
 use Illuminate\Http\Request;
 use App\Models\Job;
 use App\Models\JobApplication;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redirect;
+
 
 class JobController extends Controller
 {
     public function index()
     {
-        // Fetch jobs from the database (you can customize this based on your needs)
         $jobs = Job::all();
 
         // Pass the jobs to the view
@@ -61,28 +61,64 @@ class JobController extends Controller
     public function submitApplication(Job $job, Request $request)
     {
 
+        // dd($request->all());
         // Validate the application form data
         $request->validate([
             'email' => 'required|email',
-            'locations' => 'required',
+            'location' => 'required',
             'phone' => 'required',
             'education_level' => 'required|in:SLC,+2,Under Graduate,Graduate,Diploma',
+            'cv' => 'required|mimes:pdf,doc,docx|max:10240',
         ]);
 
-        $applicationData = [
-            'job_title' => $job->title,
+        if ($request->hasFile('cv')) {
+            $cvPath = $request->file('cv')->store('cv', 'public');
+        } else {
+            return redirect()->back()->with('error', 'Please attach a CV file.');
+        }
+
+        //create JobApplication instance
+        $application = new JobApplication([
+            'job_id' => $job->id,
+            'user_id' => auth()->id(),
             'email' => $request->input('email'),
-            'locations' => $request->input('locations'),
+            'location' => $request->input('location'),
             'phone' => $request->input('phone'),
             'education_level' => $request->input('education_level'),
-            // Add other form fields to the $applicationData array
-        ];
+            'cv' => $cvPath,
 
+        ]);
 
-        
+        $application->save();
+
         //Send email notification
-        Mail::to($request->input('email'))->send(new JobApplicationSubmitted($applicationData));
+        // Mail::to($job->employer_email)->send(new JobApplicationSubmitted($application));
 
         return redirect()->route('jobs.index')->with('success', 'Application submitted successfully!');
+    }
+
+    public function viewApplicants(Job $job)
+    {
+        $applications = $job->applications;
+
+        return view('jobs.applications.index', compact('applications', 'job'));
+    }
+    public function updateApplicationStatus(Job $job, JobApplication $application)
+    {
+        // You can add additional validation if needed
+        request()->validate([
+            'status' => 'required|in:first_interview,hired,rejected',
+        ]);
+
+        // Get the previous status before the update
+        $previousStatus = $application->status;
+
+        // Update the application status
+        $application->update(['status' => request('status')]);
+
+        // Send email notification
+        Mail::to($application->email)->send(new ApplicationStatusUpdated($application, $previousStatus));
+
+        return Redirect::back()->with('success', 'Application status updated successfully!');
     }
 }

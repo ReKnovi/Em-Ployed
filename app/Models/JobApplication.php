@@ -12,10 +12,10 @@ class JobApplication extends Model
         'job_id',
         'user_id',
         'email',
-        'locations',
+        'location',
         'phone',
         'education_level',
-        // Add other fields as needed
+        'cv',
     ];
 
     // Relationships

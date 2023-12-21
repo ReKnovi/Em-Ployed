@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('job_id')->constrained();
             $table->foreignId('user_id')->constrained();
             $table->string('email');
-            $table->string('locations');
+            $table->string('location')->default('Kathmandu');
             $table->string('phone');
             $table->string('education_level');
+            $table->string('cv')->nullable();
             $table->timestamps();
         });
     }

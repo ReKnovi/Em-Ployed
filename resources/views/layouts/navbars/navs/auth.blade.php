@@ -1,5 +1,5 @@
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-transparent  bg-primary  navbar-absolute">
+<nav class="navbar navbar-expand-sm navbar-transparent  bg-primary  navbar-absolute">
   <div class="container-fluid">
     <div class="navbar-wrapper">
       <div class="navbar-toggle">
@@ -16,6 +16,8 @@
       <span class="navbar-toggler-bar navbar-kebab"></span>
       <span class="navbar-toggler-bar navbar-kebab"></span>
     </button>
+
+
     <div class="collapse navbar-collapse justify-content-end" id="navigation">
       <form>
         <div class="input-group no-border">
@@ -68,6 +70,8 @@
         </li>
       </ul>
     </div>
+
+    
   </div>
 </nav>
   <!-- End Navbar -->
