@@ -4,7 +4,7 @@
     <div class="container">
         <h1>Apply for Job: {{ $job->title }}</h1>
 
-        <form action="{{ route('jobs.submitApplication', $job) }}" method="post" enctype="multipart/form-data">
+        <form method="post" action="{{ route('jobs.submitApplication', $job) }}" enctype="multipart/form-data">
             @csrf
 
             <div class="form-group">

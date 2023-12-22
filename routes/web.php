@@ -41,10 +41,14 @@ Route::get('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.app
 Route::post('/jobs/{job}/apply', [JobController::class, 'submitApplication'])->name('jobs.submitApplication')->middleware('auth');
 
 //to view applicants
-Route::get('/jobs/{job}/applicants', [JobController::class, 'viewApplicants'])->name('jobs.applicants');
+Route::get('/jobs/{job}/applicants', [JobController::class, 'viewApplicants'])->name('jobs.applicants')->middleware('auth');
 
 //for updating status
 Route::put('/jobs/{job}/applications/{application}/update-status', [JobController::class, 'updateApplicationStatus'])->name('jobs.updateApplicationStatus');
+
+//job search
+Route::post('/jobs/search', [JobController::class, 'search'])->name('jobs.search');
+
 
 Auth::routes();
 Route::get('/home', 'App\Http\Controllers\HomeController@index')->name('home');

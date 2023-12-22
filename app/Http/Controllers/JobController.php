@@ -12,11 +12,9 @@ use Illuminate\Support\Facades\Redirect;
 
 class JobController extends Controller
 {
-    public function index()
+    public function index(request $request)
     {
         $jobs = Job::all();
-
-        // Pass the jobs to the view
         return view('jobs.index', compact('jobs'));
     }
     public function create()
@@ -57,12 +55,10 @@ class JobController extends Controller
     {
         return view('jobs.apply', compact('job'));
     }
+    
 
     public function submitApplication(Job $job, Request $request)
     {
-
-        // dd($request->all());
-        // Validate the application form data
         $request->validate([
             'email' => 'required|email',
             'location' => 'required',
@@ -90,10 +86,6 @@ class JobController extends Controller
         ]);
 
         $application->save();
-
-        //Send email notification
-        // Mail::to($job->employer_email)->send(new JobApplicationSubmitted($application));
-
         return redirect()->route('jobs.index')->with('success', 'Application submitted successfully!');
     }
 
@@ -103,22 +95,33 @@ class JobController extends Controller
 
         return view('jobs.applications.index', compact('applications', 'job'));
     }
-    public function updateApplicationStatus(Job $job, JobApplication $application)
+
+    public function search(Request $request)
     {
-        // You can add additional validation if needed
-        request()->validate([
-            'status' => 'required|in:first_interview,hired,rejected',
-        ]);
+        $search = $request->input('search');
+        $jobs = Job::whereHas('applications', function($query) use ($search) {
+            $query->where('company_name', 'LIKE', '%' . $search . '%');
+        })->get();
+        
+        return view('jobs.index', compact('jobs'));
 
-        // Get the previous status before the update
-        $previousStatus = $application->status;
-
-        // Update the application status
-        $application->update(['status' => request('status')]);
-
-        // Send email notification
-        Mail::to($application->email)->send(new ApplicationStatusUpdated($application, $previousStatus));
-
-        return Redirect::back()->with('success', 'Application status updated successfully!');
     }
+    // public function updateApplicationStatus(Job $job, JobApplication $application)
+    // {
+    //     // You can add additional validation if needed
+    //     request()->validate([
+    //         'status' => 'required|in:first_interview,hired,rejected',
+    //     ]);
+
+    //     // Get the previous status before the update
+    //     $previousStatus = $application->status;
+
+    //     // Update the application status
+    //     $application->update(['status' => request('status')]);
+
+    //     // Send email notification
+    //     Mail::to($application->email)->send(new ApplicationStatusUpdated($application, $previousStatus));
+
+    //     return Redirect::back()->with('success', 'Application status updated successfully!');
+    // }
 }
